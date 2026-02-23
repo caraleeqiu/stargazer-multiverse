@@ -344,7 +344,7 @@ export const lukePearceStory: Story = {
           {
             id: 'choice-2-a',
             text: 'A courageous confession',
-            textCn: '（鼓起勇气告白）"左然，我不想再当你的'妹妹'了。"',
+            textCn: '（鼓起勇气告白）"左然，我不想再当你的「妹妹」了。"',
             mood: 'confession',
             nextSceneId: 'ending-he',
           },

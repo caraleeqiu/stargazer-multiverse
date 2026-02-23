@@ -1,12 +1,13 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { Ending, Panel } from '@/types/story';
+import { useGameStore } from '@/stores/game-store';
 
 interface EndingScreenProps {
   panels?: Panel[];
   ending: Ending;
   onRestart: () => void;
-  onReplay: () => void;
   currentPanelIndex: number;
   onNextPanel: () => void;
 }
@@ -15,11 +16,16 @@ export function EndingScreen({
   panels,
   ending,
   onRestart,
-  onReplay,
   currentPanelIndex,
   onNextPanel,
 }: EndingScreenProps) {
+  const router = useRouter();
+  const { unlockedEndings } = useGameStore();
   const showEndingCard = !panels || currentPanelIndex >= panels.length - 1;
+
+  const handleBackToStories = () => {
+    router.push('/stories');
+  };
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 py-8">
@@ -93,25 +99,45 @@ export function EndingScreen({
             {ending.description}
           </p>
 
+          {/* 结局收集进度 */}
+          <div className="flex justify-center gap-3 mb-8">
+            {['HE', 'NE', 'OE'].map((type) => (
+              <div
+                key={type}
+                className={`
+                  w-12 h-12 rounded-full flex items-center justify-center text-sm font-medium border-2
+                  ${unlockedEndings.includes(type)
+                    ? type === 'HE' ? 'bg-pink-500/30 border-pink-500 text-pink-300'
+                      : type === 'OE' ? 'bg-purple-500/30 border-purple-500 text-purple-300'
+                      : 'bg-blue-500/30 border-blue-500 text-blue-300'
+                    : 'bg-white/5 border-white/20 text-white/30'
+                  }
+                `}
+              >
+                {type}
+              </div>
+            ))}
+          </div>
+
           {/* 操作按钮 */}
-          <div className="flex gap-4">
-            <button
-              onClick={onReplay}
-              className="flex-1 py-3 px-6 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors"
-            >
-              重新选择
-            </button>
+          <div className="space-y-3">
             <button
               onClick={onRestart}
-              className="flex-1 py-3 px-6 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:from-pink-400 hover:to-purple-500 transition-colors"
+              className="w-full py-3 px-6 rounded-xl bg-gradient-to-r from-pink-500 to-purple-600 text-white hover:from-pink-400 hover:to-purple-500 transition-colors"
             >
-              重新开始
+              重新开始（探索其他结局）
+            </button>
+            <button
+              onClick={handleBackToStories}
+              className="w-full py-3 px-6 rounded-xl bg-white/10 text-white hover:bg-white/20 transition-colors"
+            >
+              返回故事库
             </button>
           </div>
 
           {/* 结局收集提示 */}
           <p className="text-center text-white/40 text-sm mt-6">
-            已解锁 {ending.type} 结局 · 还有更多结局等你探索
+            已解锁 {unlockedEndings.length}/3 个结局
           </p>
         </div>
       )}

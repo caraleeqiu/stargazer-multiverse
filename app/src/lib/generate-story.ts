@@ -368,22 +368,33 @@ export function convertToStoryFormat(structure: StoryStructure, characterId: str
 
   const char = characterNames[characterId] || { en: 'Unknown', cn: '未知' };
 
-  return {
+  // 为不同场景类型分配不同的占位图
+  const getImageForScene = (scene: SceneStructure, index: number): string => {
+    if (scene.type === 'ending') {
+      return scene.endingType === 'HE' ? 'ENDING_HE' :
+             scene.endingType === 'OE' ? 'ENDING_OE' : 'ENDING_NE';
+    }
+    // 根据场景索引和类型分配不同的占位图
+    const pageImages = ['PAGE_1', 'PAGE_2', 'PAGE_3', 'PAGE_5', 'PAGE_7', 'PAGE_8', 'PAGE_9', 'PAGE_10', 'PAGE_11', 'PAGE_12'];
+    return pageImages[index % pageImages.length];
+  };
+
+  const converted = {
     id: `generated-${Date.now()}`,
     title: structure.title,
     titleCn: structure.titleCn,
     character: char.en,
     characterCn: char.cn,
-    cover: '/images/luke-pearce/Main-Story/01-opening.png', // TODO: 生成封面
+    cover: '/images/luke-pearce/Main-Story/01-opening.png',
     estimatedTime: '5 min',
-    scenes: structure.scenes.map(scene => ({
+    scenes: structure.scenes.map((scene, index) => ({
       id: scene.id,
       type: scene.type,
       panels: scene.type !== 'choice' ? [
         {
           id: `${scene.id}-panel-1`,
-          image: 'PAGE_1', // TODO: 替换为生成的图片
-          narration: scene.description || ''
+          image: getImageForScene(scene, index),
+          narration: scene.description || scene.title || ''
         }
       ] : undefined,
       choice: scene.type === 'choice' ? {
@@ -401,10 +412,15 @@ export function convertToStoryFormat(structure: StoryStructure, characterId: str
         title: scene.endingType === 'HE' ? 'Happy Ending' : scene.endingType === 'OE' ? 'Open Ending' : 'Normal Ending',
         titleCn: scene.title,
         description: scene.description || '',
-        image: 'PAGE_1'
+        image: getImageForScene(scene, index)
       } : undefined
     }))
   };
+
+  console.log('[convertToStoryFormat] Converted story:', converted.titleCn);
+  console.log('[convertToStoryFormat] Scenes:', converted.scenes.map(s => ({ id: s.id, type: s.type })));
+
+  return converted;
 }
 
 /**

@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Story, Scene } from '@/types/story';
+import { useUserStoriesStore } from './user-stories-store';
 
 interface GameStore {
   // 当前故事
@@ -40,6 +41,10 @@ export const useGameStore = create<GameStore>()(
 
       loadStory: (story: Story, sceneFlow: Record<string, string>) => {
         const firstSceneId = story.scenes[0]?.id || '';
+        console.log('[loadStory] Loading story:', story.titleCn);
+        console.log('[loadStory] Scenes:', story.scenes.map(s => s.id));
+        console.log('[loadStory] SceneFlow:', sceneFlow);
+        console.log('[loadStory] First scene:', firstSceneId);
         set({
           story,
           sceneFlow,
@@ -58,12 +63,21 @@ export const useGameStore = create<GameStore>()(
 
       nextPanel: () => {
         const scene = get().getCurrentScene();
-        if (!scene?.panels) return;
+        console.log('[nextPanel] scene:', scene?.id, 'type:', scene?.type, 'panels:', scene?.panels?.length);
+
+        if (!scene?.panels) {
+          console.log('[nextPanel] No panels, calling goToNextScene');
+          get().goToNextScene();
+          return;
+        }
 
         const { currentPanelIndex } = get();
+        console.log('[nextPanel] currentPanelIndex:', currentPanelIndex, 'total panels:', scene.panels.length);
+
         if (currentPanelIndex < scene.panels.length - 1) {
           set({ currentPanelIndex: currentPanelIndex + 1 });
         } else {
+          console.log('[nextPanel] Last panel, calling goToNextScene');
           get().goToNextScene();
         }
       },
@@ -89,8 +103,12 @@ export const useGameStore = create<GameStore>()(
       },
 
       goToNextScene: () => {
-        const { currentSceneId, sceneFlow, unlockedEndings } = get();
+        const { currentSceneId, sceneFlow, unlockedEndings, story } = get();
+        console.log('[goToNextScene] currentSceneId:', currentSceneId);
+        console.log('[goToNextScene] sceneFlow:', sceneFlow);
+
         const nextSceneId = sceneFlow[currentSceneId];
+        console.log('[goToNextScene] nextSceneId:', nextSceneId);
 
         if (nextSceneId) {
           set({
@@ -98,16 +116,25 @@ export const useGameStore = create<GameStore>()(
             currentPanelIndex: 0,
             isTransitioning: true,
           });
+          console.log('[goToNextScene] Transitioning to:', nextSceneId);
 
           setTimeout(() => {
             set({ isTransitioning: false });
           }, 500);
+        } else {
+          console.log('[goToNextScene] No next scene found!');
         }
 
         const scene = get().getCurrentScene();
         if (scene?.type === 'ending' && scene.ending) {
           if (!unlockedEndings.includes(scene.ending.type)) {
-            set({ unlockedEndings: [...unlockedEndings, scene.ending.type] });
+            const newEndings = [...unlockedEndings, scene.ending.type];
+            set({ unlockedEndings: newEndings });
+
+            // 同步到用户故事库
+            if (story?.id?.startsWith('user-story-')) {
+              useUserStoriesStore.getState().updateUnlockedEndings(story.id, newEndings);
+            }
           }
         }
       },

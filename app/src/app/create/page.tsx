@@ -4,13 +4,13 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  generateStoryStructure,
   convertToStoryFormat,
   buildSceneFlow,
   StoryStructure,
   GenerationStatus
 } from '@/lib/generate-story';
 import { useGameStore } from '@/stores/game-store';
+import { useUserStoriesStore } from '@/stores/user-stories-store';
 
 // 世界观选项
 const UNIVERSES = [
@@ -82,6 +82,7 @@ type Step = 'universe' | 'character' | 'theme' | 'confirm' | 'generating' | 'res
 export default function CreatePage() {
   const router = useRouter();
   const { loadStory } = useGameStore();
+  const { saveStory } = useUserStoriesStore();
 
   const [step, setStep] = useState<Step>('universe');
   const [selectedUniverse, setSelectedUniverse] = useState<string | null>(null);
@@ -107,45 +108,88 @@ export default function CreatePage() {
     setStep('confirm');
   };
 
+  const [usedAI, setUsedAI] = useState(false);
+
   const handleGenerate = async () => {
     if (!selectedUniverse || !selectedCharacter || !selectedTheme) return;
 
     setStep('generating');
     setGenerationStatus('generating-structure');
     setError(null);
+    setUsedAI(false);
 
     try {
-      // Step 1: 生成剧本结构
-      const structure = await generateStoryStructure({
-        universeId: selectedUniverse,
-        characterId: selectedCharacter,
-        themeId: selectedTheme
+      // 调用服务器端 API 生成剧本
+      const response = await fetch('/api/generate', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          universeId: selectedUniverse,
+          characterId: selectedCharacter,
+          themeId: selectedTheme,
+        }),
       });
 
-      setGeneratedStructure(structure);
+      const result = await response.json();
+
+      if (!result.success) {
+        throw new Error(result.error || '生成失败');
+      }
+
+      setGeneratedStructure(result.data);
+      setUsedAI(!result.usedMock);
       setGenerationStatus('completed');
       setStep('result');
 
     } catch (err) {
       console.error('Generation error:', err);
-      setError('生成失败，请重试');
+      setError(err instanceof Error ? err.message : '生成失败，请重试');
       setGenerationStatus('error');
       setStep('confirm');
     }
   };
 
   const handlePlayGenerated = () => {
-    if (!generatedStructure || !selectedCharacter) return;
+    if (!generatedStructure || !selectedCharacter || !selectedUniverse || !selectedTheme) return;
 
     // 转换为游戏格式
     const story = convertToStoryFormat(generatedStructure, selectedCharacter);
     const sceneFlow = buildSceneFlow(generatedStructure);
 
-    // 加载到游戏状态
-    loadStory(story as any, sceneFlow);
+    const character = CHARACTERS.find(c => c.id === selectedCharacter);
 
-    // 跳转到播放页面
-    router.push(`/play/generated-${Date.now()}`);
+    // 保存到用户故事库
+    const storyId = saveStory({
+      meta: {
+        id: '', // will be set by saveStory
+        title: generatedStructure.title,
+        titleCn: generatedStructure.titleCn,
+        character: character?.name || '',
+        characterCn: character?.name || '',
+        universeId: selectedUniverse,
+        themeId: selectedTheme,
+      },
+      story: { ...story, id: '' } as any, // ID will be set below
+      structure: generatedStructure,
+      sceneFlow,
+    });
+
+    // 更新 story 的 ID 为保存后的 ID
+    const storyWithId = { ...story, id: storyId };
+
+    console.log('[handlePlayGenerated] Saved story:', storyId);
+    console.log('[handlePlayGenerated] Story scenes:', story.scenes.map(s => s.id));
+    console.log('[handlePlayGenerated] SceneFlow:', sceneFlow);
+
+    // 加载到游戏状态
+    loadStory(storyWithId as any, sceneFlow);
+
+    // 使用 setTimeout 确保状态更新完成后再导航
+    setTimeout(() => {
+      router.push(`/play/${storyId}`);
+    }, 100);
   };
 
   const goBack = () => {
@@ -381,6 +425,11 @@ export default function CreatePage() {
                 </div>
                 <h2 className="text-2xl font-bold text-white mb-2">生成完成！</h2>
                 <p className="text-white/60">你的专属故事已经准备好了</p>
+                {usedAI && (
+                  <div className="mt-2 inline-flex items-center gap-1 px-3 py-1 bg-violet-500/20 rounded-full">
+                    <span className="text-violet-400 text-xs">Gemini AI 生成</span>
+                  </div>
+                )}
               </div>
 
               {/* Story Preview */}

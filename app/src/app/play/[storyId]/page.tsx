@@ -4,6 +4,7 @@ import { use, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { StoryReader } from '@/components/StoryReader';
 import { useGameStore } from '@/stores/game-store';
+import { useUserStoriesStore } from '@/stores/user-stories-store';
 import { getStoryEntry } from '@/data/stories';
 
 interface Props {
@@ -13,34 +14,53 @@ interface Props {
 export default function PlayStoryPage({ params }: Props) {
   const { storyId } = use(params);
   const router = useRouter();
-  const { loadStory, story } = useGameStore();
+  const { loadStory, story, sceneFlow, currentSceneId } = useGameStore();
+  const { getStory: getUserStory, updateLastPlayed } = useUserStoriesStore();
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    // 动态生成的故事已经在 store 中，直接使用
-    if (storyId.startsWith('generated-') && story) {
+    console.log('[PlayStoryPage] storyId:', storyId);
+    console.log('[PlayStoryPage] story:', story?.titleCn);
+    console.log('[PlayStoryPage] sceneFlow keys:', Object.keys(sceneFlow));
+    console.log('[PlayStoryPage] currentSceneId:', currentSceneId);
+
+    // 如果游戏 store 中已经有正确的故事，直接使用
+    if (story && Object.keys(sceneFlow).length > 0) {
+      console.log('[PlayStoryPage] Using story from game store');
       setIsLoading(false);
       return;
+    }
+
+    // 尝试从用户故事库加载
+    if (storyId.startsWith('user-story-')) {
+      const userStory = getUserStory(storyId);
+      if (userStory) {
+        console.log('[PlayStoryPage] Loading user story:', userStory.meta.titleCn);
+        loadStory(userStory.story, userStory.sceneFlow);
+        updateLastPlayed(storyId);
+        setIsLoading(false);
+        return;
+      } else {
+        setError('故事不存在或已被删除');
+        setIsLoading(false);
+        return;
+      }
     }
 
     // 静态故事从注册表获取
     const entry = getStoryEntry(storyId);
 
     if (!entry) {
-      // 如果是 generated 但 store 中没有，说明页面刷新了
-      if (storyId.startsWith('generated-')) {
-        setError('生成的故事已过期，请重新生成');
-      } else {
-        setError('Story not found');
-      }
+      setError('Story not found');
       setIsLoading(false);
       return;
     }
 
+    console.log('[PlayStoryPage] Loading static story:', entry.story.titleCn);
     loadStory(entry.story, entry.sceneFlow);
     setIsLoading(false);
-  }, [storyId, loadStory, story]);
+  }, [storyId, loadStory, story, sceneFlow, currentSceneId, getUserStory, updateLastPlayed]);
 
   if (isLoading) {
     return (

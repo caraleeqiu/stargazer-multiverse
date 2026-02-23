@@ -196,20 +196,23 @@ function Stories() {
     {
       title: 'An Unnamed Love Poem',
       character: 'Luke Pearce',
+      subtitle: 'Tears of Themis',
       status: 'available',
-      image: null,
+      emoji: '💜',
     },
     {
-      title: 'Coming Soon',
-      character: 'New Character',
+      title: 'Hashira\'s Secret',
+      character: 'Tomioka Giyuu',
+      subtitle: 'Demon Slayer',
       status: 'coming',
-      image: null,
+      emoji: '🌊',
     },
     {
-      title: 'Coming Soon',
-      character: 'New Character',
+      title: 'Yorozuya After Hours',
+      character: 'Sakata Gintoki',
+      subtitle: 'Gintama',
       status: 'coming',
-      image: null,
+      emoji: '🍓',
     },
   ];
 
@@ -239,21 +242,14 @@ function Stories() {
             >
               {/* Image placeholder */}
               <div className="aspect-[3/4] bg-gradient-to-br from-violet-900/50 to-pink-900/50 flex items-center justify-center">
-                {story.status === 'available' ? (
-                  <div className="text-center">
-                    <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center mx-auto mb-3">
-                      <span className="text-3xl">💜</span>
-                    </div>
-                    <p className="text-white/40 text-sm">Story Cover</p>
+                <div className="text-center">
+                  <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 ${story.status === 'available' ? 'bg-white/10' : 'bg-white/5'}`}>
+                    <span className="text-3xl">{story.status === 'available' ? story.emoji : '🔒'}</span>
                   </div>
-                ) : (
-                  <div className="text-center">
-                    <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto mb-3">
-                      <span className="text-3xl">🔒</span>
-                    </div>
-                    <p className="text-white/30 text-sm">Coming Soon</p>
-                  </div>
-                )}
+                  <p className={`text-sm ${story.status === 'available' ? 'text-white/40' : 'text-white/30'}`}>
+                    {story.subtitle}
+                  </p>
+                </div>
               </div>
 
               {/* Info overlay */}

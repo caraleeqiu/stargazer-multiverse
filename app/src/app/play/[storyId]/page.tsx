@@ -18,17 +18,29 @@ export default function PlayStoryPage({ params }: Props) {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // 动态生成的故事已经在 store 中，直接使用
+    if (storyId.startsWith('generated-') && story) {
+      setIsLoading(false);
+      return;
+    }
+
+    // 静态故事从注册表获取
     const entry = getStoryEntry(storyId);
 
     if (!entry) {
-      setError('Story not found');
+      // 如果是 generated 但 store 中没有，说明页面刷新了
+      if (storyId.startsWith('generated-')) {
+        setError('生成的故事已过期，请重新生成');
+      } else {
+        setError('Story not found');
+      }
       setIsLoading(false);
       return;
     }
 
     loadStory(entry.story, entry.sceneFlow);
     setIsLoading(false);
-  }, [storyId, loadStory]);
+  }, [storyId, loadStory, story]);
 
   if (isLoading) {
     return (

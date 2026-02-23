@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
-import { Story, Scene, PlayerState } from '@/types/story';
-import { unnamedLovePoem, sceneFlow } from '@/data/unnamed-love-poem';
+import { Story, Scene } from '@/types/story';
+import { lukeDemoStory, demoSceneFlow } from '@/data/luke-demo';
 
 interface GameStore {
   // 当前故事
@@ -29,7 +29,7 @@ interface GameStore {
 export const useGameStore = create<GameStore>()(
   persist(
     (set, get) => ({
-      story: unnamedLovePoem,
+      story: lukeDemoStory,
       currentSceneId: 'opening-quote',
       choices: {},
       unlockedEndings: [],
@@ -77,7 +77,7 @@ export const useGameStore = create<GameStore>()(
 
       goToNextScene: () => {
         const { currentSceneId, unlockedEndings } = get();
-        const nextSceneId = sceneFlow[currentSceneId];
+        const nextSceneId = demoSceneFlow[currentSceneId];
 
         if (nextSceneId) {
           set({
@@ -118,7 +118,7 @@ export const useGameStore = create<GameStore>()(
       },
     }),
     {
-      name: 'stargazer-game-state',
+      name: 'stargazer-luke-demo',
       partialize: (state) => ({
         choices: state.choices,
         unlockedEndings: state.unlockedEndings,

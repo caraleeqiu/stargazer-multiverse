@@ -1,23 +1,34 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function LoginPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
-    // TODO: Implement login logic
-    setTimeout(() => setIsLoading(false), 1000);
+    // 模拟登录成功
+    setTimeout(() => {
+      setIsLoading(false);
+      setSuccess(true);
+      setTimeout(() => {
+        router.push('/universes');
+      }, 1500);
+    }, 1000);
   };
 
   const handleGoogleLogin = () => {
-    // TODO: Implement Google SSO
-    console.log('Google login');
+    setSuccess(true);
+    setTimeout(() => {
+      router.push('/universes');
+    }, 1500);
   };
 
   return (
@@ -45,10 +56,19 @@ export default function LoginPage() {
             Sign in to continue your journey
           </p>
 
+          {/* Success message */}
+          {success && (
+            <div className="mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-center">
+              <div className="text-green-400 text-lg mb-1">Welcome back!</div>
+              <div className="text-green-400/70 text-sm">Entering your universe...</div>
+            </div>
+          )}
+
           {/* Google SSO */}
           <button
             onClick={handleGoogleLogin}
-            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white text-gray-800 rounded-xl font-medium hover:bg-gray-100 transition-colors mb-6"
+            disabled={success}
+            className="w-full flex items-center justify-center gap-3 px-4 py-3 bg-white text-gray-800 rounded-xl font-medium hover:bg-gray-100 transition-colors mb-6 disabled:opacity-50"
           >
             <svg className="w-5 h-5" viewBox="0 0 24 24">
               <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
@@ -77,6 +97,7 @@ export default function LoginPage() {
                 placeholder="you@example.com"
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500 transition-colors"
                 required
+                disabled={success}
               />
             </div>
             <div>
@@ -85,9 +106,10 @@ export default function LoginPage() {
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                placeholder="••••••••"
+                placeholder="Enter your password"
                 className="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-white/30 focus:outline-none focus:border-violet-500 transition-colors"
                 required
+                disabled={success}
               />
             </div>
 
@@ -103,7 +125,7 @@ export default function LoginPage() {
 
             <button
               type="submit"
-              disabled={isLoading}
+              disabled={isLoading || success}
               className="w-full py-3 bg-gradient-to-r from-violet-600 to-pink-600 text-white rounded-xl font-medium hover:from-violet-500 hover:to-pink-500 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isLoading ? 'Signing in...' : 'Sign in'}

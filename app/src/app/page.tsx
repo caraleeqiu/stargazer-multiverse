@@ -1,346 +1,128 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 
-// ============ Header ============
-function Header() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
-
-  return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black/80 backdrop-blur-md border-b border-white/10">
-      <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-        {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
-            <span className="text-white font-bold text-sm">IR</span>
-          </div>
-          <span className="text-white font-semibold text-xl tracking-tight">IdolRift</span>
-        </Link>
-
-        {/* Desktop Nav */}
-        <nav className="hidden md:flex items-center gap-8">
-          <a href="#features" className="text-white/70 hover:text-white transition-colors text-sm">Features</a>
-          <a href="#stories" className="text-white/70 hover:text-white transition-colors text-sm">Stories</a>
-          <a href="#about" className="text-white/70 hover:text-white transition-colors text-sm">About</a>
-        </nav>
-
-        {/* Auth Buttons */}
-        <div className="hidden md:flex items-center gap-3">
-          <Link
-            href="/login"
-            className="px-4 py-2 text-sm text-white/80 hover:text-white transition-colors"
-          >
-            Log in
-          </Link>
-          <Link
-            href="/signup"
-            className="px-4 py-2 text-sm bg-gradient-to-r from-violet-600 to-pink-600 text-white rounded-full hover:from-violet-500 hover:to-pink-500 transition-all"
-          >
-            Get Started
-          </Link>
-        </div>
-
-        {/* Mobile Menu Button */}
-        <button
-          className="md:hidden text-white"
-          onClick={() => setIsMenuOpen(!isMenuOpen)}
-        >
-          <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            {isMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </button>
-      </div>
-
-      {/* Mobile Menu */}
-      {isMenuOpen && (
-        <div className="md:hidden bg-black/95 border-t border-white/10 px-6 py-4">
-          <nav className="flex flex-col gap-4">
-            <a href="#features" className="text-white/70 hover:text-white transition-colors">Features</a>
-            <a href="#stories" className="text-white/70 hover:text-white transition-colors">Stories</a>
-            <a href="#about" className="text-white/70 hover:text-white transition-colors">About</a>
-            <hr className="border-white/10" />
-            <Link href="/login" className="text-white/70 hover:text-white transition-colors">Log in</Link>
-            <Link href="/signup" className="text-violet-400 hover:text-violet-300 transition-colors">Get Started</Link>
-          </nav>
-        </div>
-      )}
-    </header>
-  );
-}
-
-// ============ Hero ============
-function Hero() {
-  return (
-    <section className="min-h-screen flex flex-col items-center justify-center px-6 pt-20 pb-12 relative overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-b from-violet-950/50 via-black to-black" />
-      <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl" />
-      <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl" />
-
-      {/* Content */}
-      <div className="relative z-10 text-center max-w-4xl mx-auto">
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/5 border border-white/10 mb-8">
-          <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-          <span className="text-white/60 text-sm">Now in Beta</span>
-        </div>
-
-        {/* Main Headline */}
-        <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight">
-          Meet your{' '}
-          <span className="bg-gradient-to-r from-violet-400 via-pink-400 to-violet-400 bg-clip-text text-transparent">
-            perfect ending
-          </span>
-          <br />
-          in a parallel world
-        </h1>
-
-        {/* Subtitle */}
-        <p className="text-xl text-white/60 mb-10 max-w-2xl mx-auto leading-relaxed">
-          Immersive interactive stories where you become the protagonist.
-          Make choices, explore branches, discover your own destiny.
-        </p>
-
-        {/* CTA Buttons */}
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href="/play"
-            className="px-8 py-4 bg-gradient-to-r from-violet-600 to-pink-600 text-white rounded-full font-medium text-lg hover:from-violet-500 hover:to-pink-500 transition-all shadow-lg shadow-violet-500/25 hover:shadow-violet-500/40"
-          >
-            Start Your Journey
-          </Link>
-          <Link
-            href="/signup"
-            className="px-8 py-4 bg-white/5 border border-white/20 text-white rounded-full font-medium text-lg hover:bg-white/10 transition-all"
-          >
-            Create Account
-          </Link>
-        </div>
-      </div>
-
-      {/* Scroll indicator */}
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce">
-        <svg className="w-6 h-6 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
-        </svg>
-      </div>
-    </section>
-  );
-}
-
-// ============ Features ============
-function Features() {
-  const features = [
-    {
-      icon: '🌍',
-      title: 'Choose Your Universe',
-      description: 'Select from multiple worldviews — idol groups, fantasy realms, office romance, and more.',
-    },
-    {
-      icon: '🔀',
-      title: 'Build Your "What Ifs"',
-      description: 'Create branching storylines where every choice leads to a different path and ending.',
-    },
-    {
-      icon: '✨',
-      title: 'Experience Others\' Worlds',
-      description: 'Explore stories crafted by other creators and discover new parallel universes.',
-    },
-  ];
-
-  return (
-    <section id="features" className="py-24 px-6 bg-black">
-      <div className="max-w-6xl mx-auto">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-            Your story, infinite possibilities
-          </h2>
-          <p className="text-white/60 text-lg max-w-2xl mx-auto">
-            IdolRift puts you in control of the narrative
-          </p>
-        </div>
-
-        {/* Feature Cards */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="group p-8 rounded-2xl bg-gradient-to-b from-white/5 to-transparent border border-white/10 hover:border-violet-500/50 transition-all duration-300"
-            >
-              <div className="w-14 h-14 rounded-xl bg-gradient-to-br from-violet-500/20 to-pink-500/20 flex items-center justify-center mb-6 text-2xl group-hover:scale-110 transition-transform">
-                {feature.icon}
-              </div>
-              <h3 className="text-xl font-semibold text-white mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-white/60 leading-relaxed">
-                {feature.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ============ Stories ============
-function Stories() {
-  const stories = [
-    {
-      title: 'An Unnamed Love Poem',
-      character: 'Luke Pearce',
-      subtitle: 'Tears of Themis',
-      status: 'available',
-      emoji: '💜',
-    },
-    {
-      title: 'Hashira\'s Secret',
-      character: 'Tomioka Giyuu',
-      subtitle: 'Demon Slayer',
-      status: 'coming',
-      emoji: '🌊',
-    },
-    {
-      title: 'Yorozuya After Hours',
-      character: 'Sakata Gintoki',
-      subtitle: 'Gintama',
-      status: 'coming',
-      emoji: '🍓',
-    },
-  ];
-
-  return (
-    <section id="stories" className="py-24 px-6 bg-gradient-to-b from-black via-violet-950/20 to-black">
-      <div className="max-w-6xl mx-auto">
-        {/* Section Header */}
-        <div className="text-center mb-16">
-          <h2 className="text-3xl md:text-5xl font-bold text-white mb-4">
-            Featured Stories
-          </h2>
-          <p className="text-white/60 text-lg max-w-2xl mx-auto">
-            Dive into immersive narratives crafted with love
-          </p>
-        </div>
-
-        {/* Story Cards */}
-        <div className="grid md:grid-cols-3 gap-6">
-          {stories.map((story, index) => (
-            <div
-              key={index}
-              className={`group relative rounded-2xl overflow-hidden border transition-all duration-300 ${
-                story.status === 'available'
-                  ? 'border-violet-500/50 hover:border-violet-400'
-                  : 'border-white/10 opacity-60'
-              }`}
-            >
-              {/* Image placeholder */}
-              <div className="aspect-[3/4] bg-gradient-to-br from-violet-900/50 to-pink-900/50 flex items-center justify-center">
-                <div className="text-center">
-                  <div className={`w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-3 ${story.status === 'available' ? 'bg-white/10' : 'bg-white/5'}`}>
-                    <span className="text-3xl">{story.status === 'available' ? story.emoji : '🔒'}</span>
-                  </div>
-                  <p className={`text-sm ${story.status === 'available' ? 'text-white/40' : 'text-white/30'}`}>
-                    {story.subtitle}
-                  </p>
-                </div>
-              </div>
-
-              {/* Info overlay */}
-              <div className="absolute bottom-0 left-0 right-0 p-6 bg-gradient-to-t from-black via-black/80 to-transparent">
-                <h3 className="text-lg font-semibold text-white mb-1">
-                  {story.title}
-                </h3>
-                <p className="text-white/60 text-sm">{story.character}</p>
-                {story.status === 'available' && (
-                  <Link
-                    href="/play"
-                    className="inline-flex items-center gap-2 mt-4 text-violet-400 hover:text-violet-300 transition-colors text-sm font-medium"
-                  >
-                    Play Now
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </Link>
-                )}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ============ CTA ============
-function CTA() {
-  return (
-    <section className="py-24 px-6 bg-black">
-      <div className="max-w-4xl mx-auto text-center">
-        <h2 className="text-3xl md:text-5xl font-bold text-white mb-6">
-          Ready to explore your parallel worlds?
-        </h2>
-        <p className="text-white/60 text-lg mb-10 max-w-2xl mx-auto">
-          Create your account and start your journey today. It&apos;s free to begin.
-        </p>
-        <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-          <Link
-            href="/signup"
-            className="px-8 py-4 bg-gradient-to-r from-violet-600 to-pink-600 text-white rounded-full font-medium text-lg hover:from-violet-500 hover:to-pink-500 transition-all shadow-lg shadow-violet-500/25"
-          >
-            Create Free Account
-          </Link>
-          <Link
-            href="/login"
-            className="px-8 py-4 text-white/70 hover:text-white transition-colors font-medium text-lg"
-          >
-            Already have an account?
-          </Link>
-        </div>
-      </div>
-    </section>
-  );
-}
-
-// ============ Footer ============
-function Footer() {
-  return (
-    <footer id="about" className="py-12 px-6 bg-black border-t border-white/10">
-      <div className="max-w-6xl mx-auto">
-        <div className="flex flex-col items-center gap-4">
-          {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
-              <span className="text-white font-bold text-sm">IR</span>
-            </div>
-            <span className="text-white font-semibold text-xl">IdolRift</span>
-          </div>
-
-          <div className="text-white/30 text-sm">
-            © 2026 IdolRift. All rights reserved.
-          </div>
-        </div>
-      </div>
-    </footer>
-  );
-}
-
-// ============ Main Page ============
 export default function Home() {
   return (
-    <main className="bg-black min-h-screen">
-      <Header />
-      <Hero />
-      <Features />
-      <Stories />
-      <CTA />
-      <Footer />
+    <main className="min-h-screen bg-black">
+      {/* Background */}
+      <div className="fixed inset-0">
+        <div className="absolute inset-0 bg-gradient-to-b from-violet-950/50 via-black to-black" />
+        <div className="absolute top-1/4 left-1/4 w-96 h-96 bg-violet-600/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-pink-600/20 rounded-full blur-3xl" />
+      </div>
+
+      {/* Content */}
+      <div className="relative z-10 min-h-screen flex flex-col">
+        {/* Header */}
+        <header className="px-6 py-6">
+          <div className="max-w-6xl mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-pink-500 flex items-center justify-center">
+                <span className="text-white font-bold">IR</span>
+              </div>
+              <span className="text-white font-semibold text-2xl">IdolRift</span>
+            </div>
+            <div className="flex items-center gap-4">
+              <Link href="/login" className="text-white/60 hover:text-white transition-colors">
+                登录
+              </Link>
+              <Link
+                href="/signup"
+                className="px-4 py-2 bg-white/10 rounded-full text-white hover:bg-white/20 transition-colors"
+              >
+                注册
+              </Link>
+            </div>
+          </div>
+        </header>
+
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col items-center justify-center px-6 pb-20">
+          {/* Title */}
+          <div className="text-center mb-16">
+            <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 tracking-tight">
+              在平行世界
+              <br />
+              <span className="bg-gradient-to-r from-violet-400 via-pink-400 to-violet-400 bg-clip-text text-transparent">
+                遇见你的结局
+              </span>
+            </h1>
+            <p className="text-xl text-white/60 max-w-xl mx-auto">
+              沉浸式互动故事，每个选择都通向不同的命运
+            </p>
+          </div>
+
+          {/* Two Entrances */}
+          <div className="w-full max-w-4xl grid md:grid-cols-2 gap-6">
+            {/* Entrance 1: Experience Stories */}
+            <Link
+              href="/stories"
+              className="group relative p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm hover:border-violet-500/50 hover:bg-white/10 transition-all duration-300"
+            >
+              <div className="absolute top-4 right-4 px-3 py-1 bg-green-500/20 rounded-full">
+                <span className="text-green-400 text-xs">可体验</span>
+              </div>
+
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-violet-500/20 to-pink-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <svg className="w-8 h-8 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                </svg>
+              </div>
+
+              <h2 className="text-2xl font-bold text-white mb-3">体验故事</h2>
+              <p className="text-white/60 mb-6">
+                探索已创作好的互动剧本，沉浸式体验不同角色的故事线
+              </p>
+
+              <div className="flex items-center gap-2 text-violet-400 group-hover:gap-3 transition-all">
+                <span>浏览故事</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </Link>
+
+            {/* Entrance 2: Create Stories */}
+            <Link
+              href="/create"
+              className="group relative p-8 rounded-2xl border border-white/10 bg-white/5 backdrop-blur-sm hover:border-pink-500/50 hover:bg-white/10 transition-all duration-300"
+            >
+              <div className="absolute top-4 right-4 px-3 py-1 bg-violet-500/20 rounded-full">
+                <span className="text-violet-400 text-xs">AI 生成</span>
+              </div>
+
+              <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-pink-500/20 to-orange-500/20 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform">
+                <svg className="w-8 h-8 text-pink-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                </svg>
+              </div>
+
+              <h2 className="text-2xl font-bold text-white mb-3">创建故事</h2>
+              <p className="text-white/60 mb-6">
+                选择世界观、角色、主题，AI 为你生成专属的互动剧本
+              </p>
+
+              <div className="flex items-center gap-2 text-pink-400 group-hover:gap-3 transition-all">
+                <span>开始创作</span>
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </div>
+            </Link>
+          </div>
+
+          {/* Stats or social proof */}
+          <div className="mt-16 flex items-center gap-8 text-white/40 text-sm">
+            <div className="flex items-center gap-2">
+              <span className="w-2 h-2 bg-green-400 rounded-full animate-pulse" />
+              <span>Beta 测试中</span>
+            </div>
+            <div>1 个故事可体验</div>
+            <div>3 种结局</div>
+          </div>
+        </div>
+      </div>
     </main>
   );
 }

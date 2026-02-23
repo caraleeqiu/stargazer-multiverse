@@ -1,11 +1,11 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 import { Story, Scene } from '@/types/story';
-import { lukeDemoStory, demoSceneFlow } from '@/data/luke-demo';
 
 interface GameStore {
   // 当前故事
-  story: Story;
+  story: Story | null;
+  sceneFlow: Record<string, string>;
 
   // 玩家状态
   currentSceneId: string;
@@ -17,6 +17,7 @@ interface GameStore {
   isTransitioning: boolean;
 
   // Actions
+  loadStory: (story: Story, sceneFlow: Record<string, string>) => void;
   getCurrentScene: () => Scene | undefined;
   nextPanel: () => void;
   prevPanel: () => void;
@@ -29,15 +30,29 @@ interface GameStore {
 export const useGameStore = create<GameStore>()(
   persist(
     (set, get) => ({
-      story: lukeDemoStory,
-      currentSceneId: 'opening-quote',
+      story: null,
+      sceneFlow: {},
+      currentSceneId: '',
       choices: {},
       unlockedEndings: [],
       currentPanelIndex: 0,
       isTransitioning: false,
 
+      loadStory: (story: Story, sceneFlow: Record<string, string>) => {
+        const firstSceneId = story.scenes[0]?.id || '';
+        set({
+          story,
+          sceneFlow,
+          currentSceneId: firstSceneId,
+          currentPanelIndex: 0,
+          choices: {},
+          isTransitioning: false,
+        });
+      },
+
       getCurrentScene: () => {
         const { story, currentSceneId } = get();
+        if (!story) return undefined;
         return story.scenes.find((s) => s.id === currentSceneId);
       },
 
@@ -49,7 +64,6 @@ export const useGameStore = create<GameStore>()(
         if (currentPanelIndex < scene.panels.length - 1) {
           set({ currentPanelIndex: currentPanelIndex + 1 });
         } else {
-          // 当前场景的 panels 已经看完，进入下一场景
           get().goToNextScene();
         }
       },
@@ -69,15 +83,14 @@ export const useGameStore = create<GameStore>()(
           isTransitioning: true,
         }));
 
-        // 短暂延迟后取消过渡状态
         setTimeout(() => {
           set({ isTransitioning: false });
         }, 500);
       },
 
       goToNextScene: () => {
-        const { currentSceneId, unlockedEndings } = get();
-        const nextSceneId = demoSceneFlow[currentSceneId];
+        const { currentSceneId, sceneFlow, unlockedEndings } = get();
+        const nextSceneId = sceneFlow[currentSceneId];
 
         if (nextSceneId) {
           set({
@@ -91,7 +104,6 @@ export const useGameStore = create<GameStore>()(
           }, 500);
         }
 
-        // 如果是结局场景，记录解锁
         const scene = get().getCurrentScene();
         if (scene?.type === 'ending' && scene.ending) {
           if (!unlockedEndings.includes(scene.ending.type)) {
@@ -101,8 +113,10 @@ export const useGameStore = create<GameStore>()(
       },
 
       restartStory: () => {
+        const { story } = get();
+        const firstSceneId = story?.scenes[0]?.id || '';
         set({
-          currentSceneId: 'opening-quote',
+          currentSceneId: firstSceneId,
           currentPanelIndex: 0,
           choices: {},
           isTransitioning: false,
@@ -118,7 +132,7 @@ export const useGameStore = create<GameStore>()(
       },
     }),
     {
-      name: 'stargazer-luke-demo',
+      name: 'stargazer-game',
       partialize: (state) => ({
         choices: state.choices,
         unlockedEndings: state.unlockedEndings,

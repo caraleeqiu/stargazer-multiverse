@@ -1,14 +1,17 @@
 'use client';
 
 import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
 export default function SignupPage() {
+  const router = useRouter();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -25,13 +28,23 @@ export default function SignupPage() {
     }
 
     setIsLoading(true);
-    // TODO: Implement signup logic
-    setTimeout(() => setIsLoading(false), 1000);
+    // 模拟注册成功
+    setTimeout(() => {
+      setIsLoading(false);
+      setSuccess(true);
+      // 2秒后跳转到世界观选择页面
+      setTimeout(() => {
+        router.push('/universes');
+      }, 2000);
+    }, 1000);
   };
 
   const handleGoogleSignup = () => {
-    // TODO: Implement Google SSO
-    console.log('Google signup');
+    // 模拟 Google 登录成功
+    setSuccess(true);
+    setTimeout(() => {
+      router.push('/universes');
+    }, 1500);
   };
 
   return (
@@ -79,6 +92,14 @@ export default function SignupPage() {
             <span className="text-white/40 text-sm">or</span>
             <div className="flex-1 h-px bg-white/10" />
           </div>
+
+          {/* Success message */}
+          {success && (
+            <div className="mb-4 p-4 bg-green-500/10 border border-green-500/20 rounded-xl text-center">
+              <div className="text-green-400 text-lg mb-1">Account created!</div>
+              <div className="text-green-400/70 text-sm">Redirecting to your adventure...</div>
+            </div>
+          )}
 
           {/* Error message */}
           {error && (

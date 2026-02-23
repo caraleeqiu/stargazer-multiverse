@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { useGameStore } from '@/stores/game-store';
 import { ComicPanel } from './ComicPanel';
 import { ChoiceNode } from './ChoiceNode';
@@ -21,6 +22,15 @@ export function StoryReader() {
   } = useGameStore();
 
   const scene = getCurrentScene();
+
+  // 如果没有故事，显示加载状态
+  if (!story) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <p className="text-white/60">Loading...</p>
+      </div>
+    );
+  }
 
   // 键盘控制
   const handleKeyDown = useCallback(
@@ -68,9 +78,29 @@ export function StoryReader() {
       {/* 顶部导航栏 */}
       <header className="fixed top-0 left-0 right-0 z-50 bg-black/50 backdrop-blur-sm">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center justify-between">
-          <div>
-            <h1 className="text-white font-medium">{story.titleCn}</h1>
-            <p className="text-white/50 text-sm">{story.characterCn}</p>
+          <div className="flex items-center gap-3">
+            <Link
+              href="/universes"
+              className="text-white/60 hover:text-white transition-colors"
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+            </Link>
+            <div>
+              <h1 className="text-white font-medium">{story.titleCn}</h1>
+              <p className="text-white/50 text-sm">{story.characterCn}</p>
+            </div>
           </div>
           <button
             onClick={restartStory}

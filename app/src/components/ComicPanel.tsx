@@ -37,7 +37,7 @@ const placeholderText: Record<string, string> = {
 };
 
 export function ComicPanel({ panel, isActive }: ComicPanelProps) {
-  const isPlaceholder = panel.image.startsWith('PAGE_');
+  const isPlaceholder = panel.image.startsWith('PAGE_') || !panel.image.startsWith('/');
   const gradient = placeholderGradients[panel.image] || 'from-purple-900/50 to-pink-900/50';
   const text = placeholderText[panel.image] || panel.image;
 

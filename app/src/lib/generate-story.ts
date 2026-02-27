@@ -230,8 +230,8 @@ export async function generateImage(imagePrompt: string): Promise<string> {
   console.log('=== 生成配图 ===');
   console.log('Image prompt:', imagePrompt);
 
-  // TODO: 可以使用 Gemini 2.0 Flash 的图像生成功能
-  // model: 'gemini-2.0-flash-exp-image-generation'
+  // TODO: 可以使用 Gemini 3.1 Flash 的图像生成功能
+  // model: 'gemini-3.1-flash-image-preview'
 
   await simulateDelay(500);
 
